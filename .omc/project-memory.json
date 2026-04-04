@@ -1,0 +1,245 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1775313288890,
+  "projectRoot": "/Users/guisester/code/block-popper",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {},
+  "hotPaths": [
+    {
+      "path": "BlockPopper/Scene/GameScene+Drag.swift",
+      "accessCount": 13,
+      "lastAccessed": 1775321193903,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 9,
+      "lastAccessed": 1775319942744,
+      "type": "directory"
+    },
+    {
+      "path": "BlockPopper/Scene/GameScene.swift",
+      "accessCount": 8,
+      "lastAccessed": 1775320577084,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/GameState.swift",
+      "accessCount": 7,
+      "lastAccessed": 1775319937780,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Helpers/SoundManager.swift",
+      "accessCount": 6,
+      "lastAccessed": 1775321639537,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/GameGrid.swift",
+      "accessCount": 5,
+      "lastAccessed": 1775318107680,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Helpers/Constants.swift",
+      "accessCount": 5,
+      "lastAccessed": 1775320198640,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Scene/TrayNode.swift",
+      "accessCount": 5,
+      "lastAccessed": 1775320208850,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Scene/GameScene+ClearAnimation.swift",
+      "accessCount": 5,
+      "lastAccessed": 1775321218407,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopperTests/Model/GameStateTests.swift",
+      "accessCount": 4,
+      "lastAccessed": 1775317982306,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopperTests/Model/BlockPieceTests.swift",
+      "accessCount": 4,
+      "lastAccessed": 1775318003463,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopperTests/Model/LevelConfigTests.swift",
+      "accessCount": 4,
+      "lastAccessed": 1775318003733,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/BlockPiece.swift",
+      "accessCount": 3,
+      "lastAccessed": 1775317602346,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/LevelConfig.swift",
+      "accessCount": 3,
+      "lastAccessed": 1775317614684,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/BlockStyle.swift",
+      "accessCount": 3,
+      "lastAccessed": 1775317998162,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/GameState+Testing.swift",
+      "accessCount": 3,
+      "lastAccessed": 1775318160262,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopperTests/Model/GameGridTests.swift",
+      "accessCount": 3,
+      "lastAccessed": 1775318169385,
+      "type": "file"
+    },
+    {
+      "path": "project.yml",
+      "accessCount": 3,
+      "lastAccessed": 1775319036945,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/App/GameViewController.swift",
+      "accessCount": 3,
+      "lastAccessed": 1775319486979,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Scene/AnimationFactory.swift",
+      "accessCount": 3,
+      "lastAccessed": 1775320651261,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Scene/StuckOverlayNode.swift",
+      "accessCount": 3,
+      "lastAccessed": 1775321143225,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/PieceGenerator.swift",
+      "accessCount": 2,
+      "lastAccessed": 1775317603239,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Helpers/ColorPalette.swift",
+      "accessCount": 2,
+      "lastAccessed": 1775317604272,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Helpers/Extensions.swift",
+      "accessCount": 2,
+      "lastAccessed": 1775317605023,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Scene/GridNode.swift",
+      "accessCount": 2,
+      "lastAccessed": 1775319436968,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Scene/HUDNode.swift",
+      "accessCount": 2,
+      "lastAccessed": 1775319459958,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Scene/BlockPieceNode.swift",
+      "accessCount": 2,
+      "lastAccessed": 1775319459988,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Scene/AnimationFactory+Transitions.swift",
+      "accessCount": 2,
+      "lastAccessed": 1775320635846,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/App/AppDelegate.swift",
+      "accessCount": 1,
+      "lastAccessed": 1775317477725,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/LaunchScreen.storyboard",
+      "accessCount": 1,
+      "lastAccessed": 1775317486920,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Scene/GameOverNode.swift",
+      "accessCount": 1,
+      "lastAccessed": 1775317613518,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopperTests/Model/PieceGeneratorTests.swift",
+      "accessCount": 1,
+      "lastAccessed": 1775317803396,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper",
+      "accessCount": 1,
+      "lastAccessed": 1775317829116,
+      "type": "directory"
+    },
+    {
+      "path": "BlockPopper/Model/GameGrid+Rescue.swift",
+      "accessCount": 1,
+      "lastAccessed": 1775318076137,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Ads/AdManager.swift",
+      "accessCount": 1,
+      "lastAccessed": 1775318500908,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
