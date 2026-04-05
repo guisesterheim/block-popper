@@ -52,13 +52,13 @@ extension GameGrid {
     // MARK: - Fill Count Queries
 
     func rowsByFillCount() -> [Int] {
-        (0..<GameGrid.size).sorted { firstRow, secondRow in
+        (0..<GameGrid.rows).sorted { firstRow, secondRow in
             filledCountInRow(firstRow) > filledCountInRow(secondRow)
         }
     }
 
     func colsByFillCount() -> [Int] {
-        (0..<GameGrid.size).sorted { firstCol, secondCol in
+        (0..<GameGrid.columns).sorted { firstCol, secondCol in
             filledCountInCol(firstCol) > filledCountInCol(secondCol)
         }
     }
@@ -68,19 +68,19 @@ extension GameGrid {
     }
 
     func filledCountInCol(_ col: Int) -> Int {
-        (0..<GameGrid.size).filter { cells[$0][col] != .empty }.count
+        (0..<GameGrid.rows).filter { cells[$0][col] != .empty }.count
     }
 
     // MARK: - Line Clearing Primitives
 
     mutating func clearRow(_ row: Int) {
-        for col in 0..<GameGrid.size {
+        for col in 0..<GameGrid.columns {
             cells[row][col] = .empty
         }
     }
 
     mutating func clearCol(_ col: Int) {
-        for row in 0..<GameGrid.size {
+        for row in 0..<GameGrid.rows {
             cells[row][col] = .empty
         }
     }
@@ -95,10 +95,10 @@ extension GameGrid {
     func buildRemainingLines(excludingRows: Set<Int>, excludingCols: Set<Int>) -> [GridLine] {
         var lines: [(line: GridLine, count: Int)] = []
 
-        for row in 0..<GameGrid.size where !excludingRows.contains(row) {
+        for row in 0..<GameGrid.rows where !excludingRows.contains(row) {
             lines.append((.row(row), filledCountInRow(row)))
         }
-        for col in 0..<GameGrid.size where !excludingCols.contains(col) {
+        for col in 0..<GameGrid.columns where !excludingCols.contains(col) {
             lines.append((.col(col), filledCountInCol(col)))
         }
 

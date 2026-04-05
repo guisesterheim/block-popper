@@ -1,12 +1,12 @@
 import UIKit
 
 struct ColorPalette {
-    // Background
-    static let background = UIColor(hex: 0x3B2A1A)
+    // Background (rich varnished wood)
+    static let background = UIColor(hex: 0x4E301C)
 
     // Grid
-    static let gridCellEmpty = UIColor(hex: 0x5A4A3A)
-    static let gridCellBorder = UIColor(hex: 0x4A3A2A)
+    static let gridCellEmpty = UIColor(hex: 0x735234)
+    static let gridCellBorder = UIColor(hex: 0x5F4128)
 
     // HUD
     static let hudText = UIColor(hex: 0xF5E6D0)

@@ -13,14 +13,14 @@ extension GameScene {
         for row in result.clearedRows {
             let delay = AnimationFactory.cascadeDelay(forLineIndex: lineIndex)
             animateClearedRow(row, afterDelay: delay)
-            totalAnimationDuration = delay + Constants.clearTotalDuration
+            totalAnimationDuration = delay + Constants.clearTotalDuration + sweepDuration
             lineIndex += 1
         }
 
         for col in result.clearedCols {
             let delay = AnimationFactory.cascadeDelay(forLineIndex: lineIndex)
             animateClearedCol(col, afterDelay: delay)
-            totalAnimationDuration = delay + Constants.clearTotalDuration
+            totalAnimationDuration = delay + Constants.clearTotalDuration + sweepDuration
             lineIndex += 1
         }
 
@@ -29,53 +29,89 @@ extension GameScene {
             SKAction.wait(forDuration: completionDelay),
             SKAction.run { [weak self] in
                 guard let self else { return }
-                _ = self.gameState.onClearAnimationComplete()
+                let wasFullClear = self.gameState.onClearAnimationComplete()
                 self.updateDisplay()
                 self.checkPhaseAfterPlacement()
             }
         ]))
     }
 
-    // MARK: - Row & Column Animation
+    // MARK: - Sweep timing
+
+    private var sweepDuration: TimeInterval { 0.25 }
+    private var sweepCellStagger: TimeInterval { sweepDuration / TimeInterval(Constants.gridColumns) }
+
+    // MARK: - Row Animation (sweep left → right, then fireworks)
 
     private func animateClearedRow(_ row: Int, afterDelay delay: TimeInterval) {
-        for col in 0..<Constants.gridSize {
+        let cellCount = Constants.gridColumns
+        let stagger = sweepDuration / TimeInterval(cellCount)
+
+        for col in 0..<cellCount {
             let cellPosition = self.gridNode.scenePosition(row: row, col: col)
-            spawnClearEffect(at: cellPosition, afterDelay: delay)
+            let sweepDelay = delay + stagger * TimeInterval(col)
+
+            // White sweep glow passes through each cell
+            spawnSweepGlow(at: cellPosition, afterDelay: sweepDelay)
+
+            // Fireworks + cell disappear after sweep passes
+            let fireworkDelay = delay + sweepDuration + stagger * TimeInterval(col)
+            spawnClearEffect(at: cellPosition, afterDelay: fireworkDelay)
         }
     }
+
+    // MARK: - Column Animation (sweep bottom → top)
 
     private func animateClearedCol(_ col: Int, afterDelay delay: TimeInterval) {
-        for row in 0..<Constants.gridSize {
+        let cellCount = Constants.gridRows
+        let stagger = sweepDuration / TimeInterval(cellCount)
+
+        for row in 0..<cellCount {
             let cellPosition = self.gridNode.scenePosition(row: row, col: col)
-            spawnClearEffect(at: cellPosition, afterDelay: delay)
+            // Bottom to top: row 7 (bottom) first → row 0 (top) last
+            let reversedRow = cellCount - 1 - row
+            let sweepDelay = delay + stagger * TimeInterval(reversedRow)
+
+            spawnSweepGlow(at: cellPosition, afterDelay: sweepDelay)
+
+            let fireworkDelay = delay + sweepDuration + stagger * TimeInterval(reversedRow)
+            spawnClearEffect(at: cellPosition, afterDelay: fireworkDelay)
         }
     }
 
-    // MARK: - Per-Cell Clear Effect
+    // MARK: - White Sweep Glow
 
-    private func spawnClearEffect(at position: CGPoint, afterDelay delay: TimeInterval) {
-        let flashNode = SKShapeNode(rectOf: CGSize(
-            width: self.gridNode.cellSize - 2,
-            height: self.gridNode.cellSize - 2
-        ))
-        flashNode.fillColor = ColorPalette.clearFlash
-        flashNode.strokeColor = .clear
-        flashNode.position = position
-        flashNode.zPosition = 5
-        flashNode.alpha = 0
-        addChild(flashNode)
+    private func spawnSweepGlow(at position: CGPoint, afterDelay delay: TimeInterval) {
+        let cs = self.gridNode.cellSize
+        let glowNode = SKShapeNode(rectOf: CGSize(width: cs + 4, height: cs + 4))
+        glowNode.fillColor = UIColor.white.withAlphaComponent(0.5)
+        glowNode.strokeColor = UIColor.white.withAlphaComponent(0.3)
+        glowNode.lineWidth = 1
+        glowNode.position = position
+        glowNode.zPosition = 7
+        glowNode.alpha = 0
+        glowNode.setScale(0.8)
+        addChild(glowNode)
 
-        let particles = createParticles(at: position)
-
-        flashNode.run(SKAction.sequence([
+        let glowDuration: TimeInterval = 0.15
+        glowNode.run(SKAction.sequence([
             SKAction.wait(forDuration: delay),
-            SKAction.fadeIn(withDuration: 0),
-            SKAction.fadeAlpha(to: 0.9, duration: Constants.clearFlashDuration),
-            SKAction.fadeOut(withDuration: Constants.clearFlashDuration),
+            SKAction.group([
+                SKAction.fadeAlpha(to: 0.7, duration: glowDuration * 0.3),
+                SKAction.scale(to: 1.1, duration: glowDuration * 0.3)
+            ]),
+            SKAction.group([
+                SKAction.fadeOut(withDuration: glowDuration * 0.7),
+                SKAction.scale(to: 1.3, duration: glowDuration * 0.7)
+            ]),
             SKAction.removeFromParent()
         ]))
+    }
 
+    // MARK: - Per-Cell Clear Effect (fireworks + disappear)
+
+    private func spawnClearEffect(at position: CGPoint, afterDelay delay: TimeInterval) {
+        let particles = createParticles(at: position)
         animateParticles(particles, afterDelay: delay)
     }
 

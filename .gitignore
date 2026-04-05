@@ -1,0 +1,38 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode user data
+xcuserdata/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+
+# Xcode build
+build/
+DerivedData/
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Generated Xcode project (regenerate from project.yml via xcodegen)
+BlockPopper.xcodeproj/
+
+# Environment / secrets
+.env
+.env.*
+*.p12
+*.mobileprovision
+*.pem
+local.xcconfig
+
+# OMC tooling state
+.omc/state/
+.omc/sessions/
+
+# CocoaPods / SPM
+Pods/
+.build/

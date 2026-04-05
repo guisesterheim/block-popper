@@ -1,12 +1,16 @@
 import Foundation
 
 struct LevelConfig {
-    /// Target score to reach the given level.
-    /// Formula: 100 * level + 50 * level * (level - 1)
-    /// Level 1: 100, Level 2: 300, Level 3: 600, Level 4: 1000
-    /// Marked as tunable -- adjust multipliers to change difficulty curve.
+    /// Target score for a given phase.
+    /// Phase 1: 100, Phase 2: 120, Phase 3: 140, ...
+    /// Linear progression: 100 + (phase - 1) * 20
+    static func targetScore(forPhase phase: Int) -> Int {
+        guard phase >= 1 else { return 100 }
+        return 100 + (phase - 1) * 20
+    }
+
+    /// Legacy — kept for backward compatibility with tests.
     static func targetScore(forLevel level: Int) -> Int {
-        guard level >= 1 else { return 0 }
-        return 100 * level + 50 * level * (level - 1)
+        targetScore(forPhase: level)
     }
 }

@@ -1,119 +1,61 @@
+import AudioToolbox
 import AVFoundation
 import UIKit
 
 /// Manages all game sounds and haptic feedback.
+/// Uses iOS system sounds for interactions, synthesized audio for line clears.
 class SoundManager {
 
     static let shared = SoundManager()
 
-    private var audioPlayers: [String: AVAudioPlayer] = [:]
+    private var fireworkPlayer: AVAudioPlayer?
+    private var victoryPlayer: AVAudioPlayer?
     private let lightImpact = UIImpactFeedbackGenerator(style: .light)
     private let mediumImpact = UIImpactFeedbackGenerator(style: .medium)
     private let heavyImpact = UIImpactFeedbackGenerator(style: .heavy)
+
+    private let pickupSoundID: SystemSoundID = 1057
+    private let validDropSoundID: SystemSoundID = 1104
+    private let invalidDropSoundID: SystemSoundID = 1103
 
     private init() {
         self.lightImpact.prepare()
         self.mediumImpact.prepare()
         self.heavyImpact.prepare()
-        generateSounds()
+        self.fireworkPlayer = makeFireworkPlayer()
+        self.victoryPlayer = makeVictoryPlayer()
     }
 
     // MARK: - Public API
 
     func playPickup() {
         self.lightImpact.impactOccurred()
-        playSound(named: "pickup")
+        AudioServicesPlaySystemSound(self.pickupSoundID)
     }
 
     func playValidDrop() {
         self.mediumImpact.impactOccurred()
-        playSound(named: "validDrop")
+        AudioServicesPlaySystemSound(self.validDropSoundID)
     }
 
     func playInvalidDrop() {
         self.lightImpact.impactOccurred(intensity: 0.4)
-        playSound(named: "invalidDrop")
+        AudioServicesPlaySystemSound(self.invalidDropSoundID)
     }
 
     func playLineClear() {
         self.heavyImpact.impactOccurred()
-        playSound(named: "firework")
+        self.fireworkPlayer?.currentTime = 0
+        self.fireworkPlayer?.play()
     }
 
-    // MARK: - Sound Generation
-
-    private func generateSounds() {
-        self.audioPlayers["pickup"] = makeWoodenSlidePlayer()
-        self.audioPlayers["validDrop"] = makeSoftThudPlayer()
-        self.audioPlayers["invalidDrop"] = makeCardboardSetPlayer()
-        self.audioPlayers["firework"] = makeFireworkPlayer()
+    func playVictory() {
+        self.heavyImpact.impactOccurred()
+        self.victoryPlayer?.currentTime = 0
+        self.victoryPlayer?.play()
     }
 
-    // Wooden slide: short scrape of wood dragging across a surface
-    private func makeWoodenSlidePlayer() -> AVAudioPlayer? {
-        let sampleRate: Double = 44100
-        let duration: Double = 0.12
-        let sampleCount = Int(sampleRate * duration)
-        var samples = [Float](repeating: 0, count: sampleCount)
-        let volume: Float = 0.3
-
-        for i in 0..<sampleCount {
-            let time = Double(i) / sampleRate
-            let progress = time / duration
-            let envelope = (1.0 - progress) * (1.0 - progress)
-            let noise = Double.random(in: -1...1)
-            let filtered = noise * 0.6 + sin(2.0 * .pi * 320 * time) * 0.4
-            samples[i] = Float(filtered * envelope) * volume
-        }
-        return playerFromSamples(samples, sampleRate: sampleRate)
-    }
-
-    // Soft thud: muted warm landing on padded surface
-    private func makeSoftThudPlayer() -> AVAudioPlayer? {
-        let sampleRate: Double = 44100
-        let duration: Double = 0.15
-        let sampleCount = Int(sampleRate * duration)
-        var samples = [Float](repeating: 0, count: sampleCount)
-        let volume: Float = 0.45
-
-        for i in 0..<sampleCount {
-            let time = Double(i) / sampleRate
-            let progress = time / duration
-            // Fast exponential decay for thud character
-            let envelope = exp(-progress * 12.0)
-            // Low frequency body + slight noise for texture
-            let body = sin(2.0 * .pi * 80 * time) * 0.7
-            let overtone = sin(2.0 * .pi * 160 * time) * 0.2
-            let texture = Double.random(in: -1...1) * 0.1 * (1.0 - progress)
-            samples[i] = Float((body + overtone + texture) * envelope) * volume
-        }
-        return playerFromSamples(samples, sampleRate: sampleRate)
-    }
-
-    private func makeCardboardSetPlayer() -> AVAudioPlayer? {
-        let sampleRate: Double = 44100
-        let duration: Double = 0.10
-        let sampleCount = Int(sampleRate * duration)
-        var samples = [Float](repeating: 0, count: sampleCount)
-        let volume: Float = 0.25
-
-        for i in 0..<sampleCount {
-            let time = Double(i) / sampleRate
-            let progress = time / duration
-            let envelope = exp(-progress * 18.0)
-            // Very low thump + muffled noise
-            let thump = sin(2.0 * .pi * 60 * time) * 0.6
-            let muffle = Double.random(in: -1...1) * 0.4 * exp(-progress * 25.0)
-            samples[i] = Float((thump + muffle) * envelope) * volume
-        }
-        return playerFromSamples(samples, sampleRate: sampleRate)
-    }
-
-    private func playSound(named name: String) {
-        guard let player = self.audioPlayers[name] else { return }
-        player.currentTime = 0
-        player.play()
-    }
+    // MARK: - Firework Synthesis
 
     private func makeFireworkPlayer() -> AVAudioPlayer? {
         let sampleRate: Double = 44100
@@ -125,29 +67,64 @@ class SoundManager {
         for i in 0..<sampleCount {
             let time = Double(i) / sampleRate
             let progress = time / duration
-
-            // Rising whistle (frequency sweep 400 -> 1200 Hz)
             let whistleFrequency = 400.0 + progress * 800.0
             let whistle = sin(2.0 * .pi * whistleFrequency * time)
-
-            // Crackle noise burst in last 40%
-            let crackle: Double
-            if progress > 0.6 {
-                let noisePhase = Double.random(in: -1...1)
-                crackle = noisePhase * (1.0 - progress) * 3.0
-            } else {
-                crackle = 0
-            }
-
-            // Envelope: rise then sharp fall
-            let envelope: Double
-            if progress < 0.6 {
-                envelope = progress / 0.6
-            } else {
-                envelope = (1.0 - progress) / 0.4
-            }
-
+            let crackle: Double = progress > 0.6
+                ? Double.random(in: -1...1) * (1.0 - progress) * 3.0
+                : 0
+            let envelope: Double = progress < 0.6
+                ? progress / 0.6
+                : (1.0 - progress) / 0.4
             samples[i] = Float((whistle * 0.5 + crackle * 0.5) * envelope) * volume
+        }
+        return playerFromSamples(samples, sampleRate: sampleRate)
+    }
+
+    // MARK: - Victory Fanfare Synthesis
+
+    private func makeVictoryPlayer() -> AVAudioPlayer? {
+        let sampleRate: Double = 44100
+        let duration: Double = 1.2
+        let sampleCount = Int(sampleRate * duration)
+        var samples = [Float](repeating: 0, count: sampleCount)
+        let volume: Float = 0.35
+
+        // Three ascending notes: C5 → E5 → G5, then a sustained chord
+        let notes: [(freq: Double, start: Double, end: Double)] = [
+            (523.25, 0.0, 0.3),    // C5
+            (659.25, 0.2, 0.5),    // E5
+            (783.99, 0.4, 0.8),    // G5
+            (1046.50, 0.6, 1.2),   // C6 (sustained)
+        ]
+
+        for i in 0..<sampleCount {
+            let time = Double(i) / sampleRate
+            var value: Double = 0
+
+            for note in notes {
+                guard time >= note.start && time < note.end else { continue }
+                let noteProgress = (time - note.start) / (note.end - note.start)
+                // Attack-sustain-release envelope
+                let attack = min(1.0, (time - note.start) / 0.03)
+                let release = noteProgress > 0.7 ? (1.0 - noteProgress) / 0.3 : 1.0
+                let envelope = attack * release
+
+                // Rich tone: fundamental + harmonics
+                let fundamental = sin(2.0 * .pi * note.freq * time)
+                let harmonic2 = sin(2.0 * .pi * note.freq * 2.0 * time) * 0.3
+                let harmonic3 = sin(2.0 * .pi * note.freq * 3.0 * time) * 0.15
+                value += (fundamental + harmonic2 + harmonic3) * envelope * 0.4
+            }
+
+            // Add a subtle shimmer/sparkle
+            if time > 0.5 {
+                let shimmer = sin(2.0 * .pi * 2000.0 * time) * 0.05
+                    * sin(2.0 * .pi * 8.0 * time) // tremolo
+                    * max(0, 1.0 - (time - 0.5) / 0.7)
+                value += shimmer
+            }
+
+            samples[i] = Float(value) * volume
         }
 
         return playerFromSamples(samples, sampleRate: sampleRate)
@@ -156,30 +133,27 @@ class SoundManager {
     // MARK: - WAV Builder
 
     private func playerFromSamples(_ samples: [Float], sampleRate: Double) -> AVAudioPlayer? {
-        let dataSize = samples.count * 2  // 16-bit samples
+        let dataSize = samples.count * 2
         var wavData = Data()
 
-        // WAV header
         wavData.append(contentsOf: "RIFF".utf8)
         appendUInt32(&wavData, UInt32(36 + dataSize))
         wavData.append(contentsOf: "WAVE".utf8)
         wavData.append(contentsOf: "fmt ".utf8)
-        appendUInt32(&wavData, 16)          // chunk size
-        appendUInt16(&wavData, 1)           // PCM format
-        appendUInt16(&wavData, 1)           // mono
+        appendUInt32(&wavData, 16)
+        appendUInt16(&wavData, 1)
+        appendUInt16(&wavData, 1)
         appendUInt32(&wavData, UInt32(sampleRate))
-        appendUInt32(&wavData, UInt32(sampleRate) * 2)  // byte rate
-        appendUInt16(&wavData, 2)           // block align
-        appendUInt16(&wavData, 16)          // bits per sample
+        appendUInt32(&wavData, UInt32(sampleRate) * 2)
+        appendUInt16(&wavData, 2)
+        appendUInt16(&wavData, 16)
         wavData.append(contentsOf: "data".utf8)
         appendUInt32(&wavData, UInt32(dataSize))
 
         for sample in samples {
             let clamped = max(-1.0, min(1.0, sample))
-            let intSample = Int16(clamped * Float(Int16.max))
-            appendInt16(&wavData, intSample)
+            appendInt16(&wavData, Int16(clamped * Float(Int16.max)))
         }
-
         return try? AVAudioPlayer(data: wavData)
     }
 

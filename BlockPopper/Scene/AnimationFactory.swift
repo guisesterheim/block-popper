@@ -68,7 +68,7 @@ struct AnimationFactory {
     // MARK: - Style Transition Wave
 
     static func styleWaveDelay(forColumn column: Int) -> TimeInterval {
-        let columnStagger = Constants.styleWaveDuration / TimeInterval(Constants.gridSize)
+        let columnStagger = Constants.styleWaveDuration / TimeInterval(Constants.gridColumns)
         return TimeInterval(column) * columnStagger
     }
 

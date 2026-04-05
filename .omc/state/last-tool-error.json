@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"# Compile just the Swift files to check for errors\\nswiftc -typecheck \\\\\\n  -sdk $(xcrun --sdk iphonesimulator --show-sdk-path) \\\\\\n  -target arm64-apple-ios16.0-simulator \\\\\\n  BlockPoppe...",
-  "error": "Exit code 1\nBlockPopper/Helpers/Constants.swift:19:36: error: cannot find type 'TimeInterval' in scope\n17 | \n18 |     // Animation timing (seconds)\n19 |     static let clearFlashDuration: TimeInterval = 0.05\n   |                                    `- error: cannot find type 'TimeInterval' in scope\n20 |     static let clearParticleDuration: TimeInterval = 0.3\n21 |     static let clearCellFadeDuration: TimeInterval = 0.2\n\nBlockPopper/Helpers/Constants.swift:20:39: error: cannot find type 'TimeInte...",
-  "timestamp": "2026-04-04T16:00:30.194Z",
-  "retry_count": 1
-}

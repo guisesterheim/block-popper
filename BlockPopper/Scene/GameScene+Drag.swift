@@ -5,7 +5,8 @@ import SpriteKit
 extension GameScene {
 
     func handleTouchBegan(_ touch: UITouch) {
-        guard case .playing = self.gameState.phase else { return }
+        guard self.gameState.gamePhase == .playing || self.gameState.gamePhase == .animatingClear else { return }
+        guard !self.gameState.isEraseMode else { return }
 
         let sceneLocation = touch.location(in: self)
         let touchPadding: CGFloat = 20
@@ -41,8 +42,8 @@ extension GameScene {
 
         let sceneLocation = touch.location(in: self)
         let displayLocation = CGPoint(
-            x: sceneLocation.x,
-            y: sceneLocation.y + Constants.dragVerticalOffset
+            x: sceneLocation.x + self.dragCenterOffset.x,
+            y: sceneLocation.y + Constants.dragVerticalOffset + self.dragCenterOffset.y
         )
         pieceNode.position = displayLocation
 
@@ -58,8 +59,8 @@ extension GameScene {
 
         let sceneLocation = touch.location(in: self)
         let dropLocation = CGPoint(
-            x: sceneLocation.x,
-            y: sceneLocation.y + Constants.dragVerticalOffset
+            x: sceneLocation.x + self.dragCenterOffset.x,
+            y: sceneLocation.y + Constants.dragVerticalOffset + self.dragCenterOffset.y
         )
 
         self.gridNode.hideGhost()
@@ -126,9 +127,29 @@ extension GameScene {
             cellSize: self.gridNode.cellSize,
             style: self.gameState.currentStyle
         )
+
+        // Place the floating piece at the display position (above finger)
+        let displayY = sceneLocation.y + Constants.dragVerticalOffset
+
+        // Align the bottom-left corner of the piece's bounding box to the finger
+        let cs = self.gridNode.cellSize
+        let minCol = piece.offsets.map(\.col).min() ?? 0
+        let maxRow = piece.offsets.map(\.row).max() ?? 0
+
+        // Cell centers are at (col*cs, -row*cs). Bottom-left corner of bounding box:
+        //   left edge  = minCol * cs - cs/2
+        //   bottom edge = -maxRow * cs - cs/2
+        // We want nodePos + edge = fingerPos, so offset = -edge
+        let baseOffsetX = -(CGFloat(minCol) * cs - cs / 2)
+        let baseOffsetY = CGFloat(maxRow) * cs + cs / 2
+
+        // Nudge 20% of a cell size to the left and down
+        let nudge = cs * 0.2
+        self.dragCenterOffset = CGPoint(x: baseOffsetX - nudge, y: baseOffsetY - nudge)
+
         floatingNode.position = CGPoint(
-            x: sceneLocation.x,
-            y: sceneLocation.y + Constants.dragVerticalOffset
+            x: sceneLocation.x + self.dragCenterOffset.x,
+            y: displayY + self.dragCenterOffset.y
         )
         floatingNode.setScale(Constants.dragScaleFactor)
         floatingNode.zPosition = 10
@@ -141,6 +162,7 @@ extension GameScene {
     func endDrag() {
         self.draggedPieceNode?.removeFromParent()
         self.draggedPieceNode = nil
+        self.dragCenterOffset = .zero
 
         if let index = self.draggedTrayIndex {
             self.trayNode.pieceNode(at: index)?.isHidden = false
@@ -152,6 +174,7 @@ extension GameScene {
     func cancelDrag() {
         self.draggedPieceNode?.removeFromParent()
         self.draggedPieceNode = nil
+        self.dragCenterOffset = .zero
 
         if let index = self.draggedTrayIndex {
             self.trayNode.pieceNode(at: index)?.isHidden = false

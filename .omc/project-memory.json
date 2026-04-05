@@ -31,63 +31,153 @@
   "directoryMap": {},
   "hotPaths": [
     {
-      "path": "BlockPopper/Scene/GameScene+Drag.swift",
-      "accessCount": 13,
-      "lastAccessed": 1775321193903,
-      "type": "file"
-    },
-    {
-      "path": "",
-      "accessCount": 9,
-      "lastAccessed": 1775319942744,
-      "type": "directory"
-    },
-    {
       "path": "BlockPopper/Scene/GameScene.swift",
-      "accessCount": 8,
-      "lastAccessed": 1775320577084,
+      "accessCount": 43,
+      "lastAccessed": 1775358576091,
       "type": "file"
     },
     {
       "path": "BlockPopper/Model/GameState.swift",
-      "accessCount": 7,
-      "lastAccessed": 1775319937780,
+      "accessCount": 25,
+      "lastAccessed": 1775357500848,
       "type": "file"
     },
     {
-      "path": "BlockPopper/Helpers/SoundManager.swift",
-      "accessCount": 6,
-      "lastAccessed": 1775321639537,
+      "path": "BlockPopper/Scene/GameScene+Drag.swift",
+      "accessCount": 25,
+      "lastAccessed": 1775358290253,
       "type": "file"
     },
     {
-      "path": "BlockPopper/Model/GameGrid.swift",
-      "accessCount": 5,
-      "lastAccessed": 1775318107680,
+      "path": "BlockPopper/Scene/GridNode.swift",
+      "accessCount": 21,
+      "lastAccessed": 1775352560845,
       "type": "file"
     },
     {
-      "path": "BlockPopper/Helpers/Constants.swift",
-      "accessCount": 5,
-      "lastAccessed": 1775320198640,
+      "path": "BlockPopper/Scene/HUDNode.swift",
+      "accessCount": 20,
+      "lastAccessed": 1775352544477,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 18,
+      "lastAccessed": 1775420334500,
+      "type": "directory"
+    },
+    {
+      "path": "BlockPopper/Scene/GameScene+Background.swift",
+      "accessCount": 15,
+      "lastAccessed": 1775358649085,
       "type": "file"
     },
     {
       "path": "BlockPopper/Scene/TrayNode.swift",
-      "accessCount": 5,
-      "lastAccessed": 1775320208850,
+      "accessCount": 13,
+      "lastAccessed": 1775351930515,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/BlockPiece.swift",
+      "accessCount": 13,
+      "lastAccessed": 1775353992500,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Helpers/SoundManager.swift",
+      "accessCount": 13,
+      "lastAccessed": 1775356445329,
       "type": "file"
     },
     {
       "path": "BlockPopper/Scene/GameScene+ClearAnimation.swift",
-      "accessCount": 5,
-      "lastAccessed": 1775321218407,
+      "accessCount": 12,
+      "lastAccessed": 1775353820887,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Helpers/Constants.swift",
+      "accessCount": 10,
+      "lastAccessed": 1775420325248,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/GameGrid.swift",
+      "accessCount": 9,
+      "lastAccessed": 1775352427007,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/GameGrid+Rescue.swift",
+      "accessCount": 6,
+      "lastAccessed": 1775351033355,
       "type": "file"
     },
     {
       "path": "BlockPopperTests/Model/GameStateTests.swift",
-      "accessCount": 4,
-      "lastAccessed": 1775317982306,
+      "accessCount": 6,
+      "lastAccessed": 1775352889536,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopperTests/Model/LevelConfigTests.swift",
+      "accessCount": 6,
+      "lastAccessed": 1775352922595,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/PieceSelectionEngine.swift",
+      "accessCount": 6,
+      "lastAccessed": 1775358812295,
+      "type": "file"
+    },
+    {
+      "path": "project.yml",
+      "accessCount": 6,
+      "lastAccessed": 1775420317413,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/BlockStyle.swift",
+      "accessCount": 5,
+      "lastAccessed": 1775333353494,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/LevelConfig.swift",
+      "accessCount": 5,
+      "lastAccessed": 1775352448358,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Helpers/ColorPalette.swift",
+      "accessCount": 5,
+      "lastAccessed": 1775352488510,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Scene/AnimationFactory.swift",
+      "accessCount": 5,
+      "lastAccessed": 1775352555208,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Scene/GridNode+Rendering.swift",
+      "accessCount": 5,
+      "lastAccessed": 1775352566544,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Model/GameState+Testing.swift",
+      "accessCount": 5,
+      "lastAccessed": 1775352792558,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Scene/BlockPieceNode.swift",
+      "accessCount": 5,
+      "lastAccessed": 1775357015843,
       "type": "file"
     },
     {
@@ -97,33 +187,21 @@
       "type": "file"
     },
     {
-      "path": "BlockPopperTests/Model/LevelConfigTests.swift",
+      "path": "BlockPopper/Scene/StuckOverlayNode.swift",
       "accessCount": 4,
-      "lastAccessed": 1775318003733,
+      "lastAccessed": 1775333547456,
       "type": "file"
     },
     {
-      "path": "BlockPopper/Model/BlockPiece.swift",
-      "accessCount": 3,
-      "lastAccessed": 1775317602346,
+      "path": "BlockPopper/App/GameViewController.swift",
+      "accessCount": 4,
+      "lastAccessed": 1775334913040,
       "type": "file"
     },
     {
-      "path": "BlockPopper/Model/LevelConfig.swift",
-      "accessCount": 3,
-      "lastAccessed": 1775317614684,
-      "type": "file"
-    },
-    {
-      "path": "BlockPopper/Model/BlockStyle.swift",
-      "accessCount": 3,
-      "lastAccessed": 1775317998162,
-      "type": "file"
-    },
-    {
-      "path": "BlockPopper/Model/GameState+Testing.swift",
-      "accessCount": 3,
-      "lastAccessed": 1775318160262,
+      "path": "BlockPopper/Scene/ActionButtonNode.swift",
+      "accessCount": 4,
+      "lastAccessed": 1775355840801,
       "type": "file"
     },
     {
@@ -133,40 +211,16 @@
       "type": "file"
     },
     {
-      "path": "project.yml",
-      "accessCount": 3,
-      "lastAccessed": 1775319036945,
-      "type": "file"
-    },
-    {
-      "path": "BlockPopper/App/GameViewController.swift",
-      "accessCount": 3,
-      "lastAccessed": 1775319486979,
-      "type": "file"
-    },
-    {
-      "path": "BlockPopper/Scene/AnimationFactory.swift",
-      "accessCount": 3,
-      "lastAccessed": 1775320651261,
-      "type": "file"
-    },
-    {
-      "path": "BlockPopper/Scene/StuckOverlayNode.swift",
-      "accessCount": 3,
-      "lastAccessed": 1775321143225,
-      "type": "file"
-    },
-    {
       "path": "BlockPopper/Model/PieceGenerator.swift",
-      "accessCount": 2,
-      "lastAccessed": 1775317603239,
+      "accessCount": 3,
+      "lastAccessed": 1775352441217,
       "type": "file"
     },
     {
-      "path": "BlockPopper/Helpers/ColorPalette.swift",
-      "accessCount": 2,
-      "lastAccessed": 1775317604272,
-      "type": "file"
+      "path": "BlockPopper",
+      "accessCount": 3,
+      "lastAccessed": 1775420335832,
+      "type": "directory"
     },
     {
       "path": "BlockPopper/Helpers/Extensions.swift",
@@ -175,27 +229,21 @@
       "type": "file"
     },
     {
-      "path": "BlockPopper/Scene/GridNode.swift",
-      "accessCount": 2,
-      "lastAccessed": 1775319436968,
-      "type": "file"
-    },
-    {
-      "path": "BlockPopper/Scene/HUDNode.swift",
-      "accessCount": 2,
-      "lastAccessed": 1775319459958,
-      "type": "file"
-    },
-    {
-      "path": "BlockPopper/Scene/BlockPieceNode.swift",
-      "accessCount": 2,
-      "lastAccessed": 1775319459988,
-      "type": "file"
-    },
-    {
       "path": "BlockPopper/Scene/AnimationFactory+Transitions.swift",
       "accessCount": 2,
       "lastAccessed": 1775320635846,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Ads/AdManager.swift",
+      "accessCount": 2,
+      "lastAccessed": 1775420316916,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Helpers/DebugConfig.swift",
+      "accessCount": 2,
+      "lastAccessed": 1775420341601,
       "type": "file"
     },
     {
@@ -223,21 +271,39 @@
       "type": "file"
     },
     {
-      "path": "BlockPopper",
+      "path": "BlockPopper/Scene",
       "accessCount": 1,
-      "lastAccessed": 1775317829116,
+      "lastAccessed": 1775351040082,
       "type": "directory"
     },
     {
-      "path": "BlockPopper/Model/GameGrid+Rescue.swift",
+      "path": "BlockPopper/Overlays/StuckOverlayNode.swift",
       "accessCount": 1,
-      "lastAccessed": 1775318076137,
+      "lastAccessed": 1775352567082,
       "type": "file"
     },
     {
-      "path": "BlockPopper/Ads/AdManager.swift",
+      "path": "BlockPopper/Overlays/GameOverNode.swift",
       "accessCount": 1,
-      "lastAccessed": 1775318500908,
+      "lastAccessed": 1775352567407,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopper/Scene/GameScene+HackAnimations.swift",
+      "accessCount": 1,
+      "lastAccessed": 1775352651295,
+      "type": "file"
+    },
+    {
+      "path": "BlockPopperTests",
+      "accessCount": 1,
+      "lastAccessed": 1775352827843,
+      "type": "directory"
+    },
+    {
+      "path": "BlockPopper/Info.plist",
+      "accessCount": 1,
+      "lastAccessed": 1775420317909,
       "type": "file"
     }
   ],

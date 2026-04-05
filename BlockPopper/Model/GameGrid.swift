@@ -9,7 +9,7 @@ struct ClearResult {
     let clearedRows: [Int]
     let clearedCols: [Int]
     var totalClearedLines: Int { clearedRows.count + clearedCols.count }
-    var points: Int { totalClearedLines * Constants.gridSize }
+    var points: Int { clearedRows.count * Constants.gridColumns + clearedCols.count * Constants.gridRows }
     var isBoardEmpty: Bool = false
 }
 
@@ -19,7 +19,9 @@ struct GridPosition: Equatable {
 }
 
 struct GameGrid {
-    static let size = Constants.gridSize
+    static let columns = Constants.gridColumns
+    static let rows = Constants.gridRows
+    static let size = columns // backward compatibility
 
     var cells: [[CellState]]
 
@@ -33,8 +35,8 @@ struct GameGrid {
 
     init() {
         cells = Array(
-            repeating: Array(repeating: CellState.empty, count: GameGrid.size),
-            count: GameGrid.size
+            repeating: Array(repeating: CellState.empty, count: GameGrid.columns),
+            count: GameGrid.rows
         )
     }
 
@@ -44,8 +46,8 @@ struct GameGrid {
         for offset in piece.offsets {
             let targetRow = position.row + offset.row
             let targetCol = position.col + offset.col
-            guard targetRow >= 0, targetRow < GameGrid.size,
-                  targetCol >= 0, targetCol < GameGrid.size else {
+            guard targetRow >= 0, targetRow < GameGrid.rows,
+                  targetCol >= 0, targetCol < GameGrid.columns else {
                 return false
             }
             if cells[targetRow][targetCol] != .empty {
@@ -69,14 +71,14 @@ struct GameGrid {
         var clearedRows: [Int] = []
         var clearedCols: [Int] = []
 
-        for row in 0..<GameGrid.size {
+        for row in 0..<GameGrid.rows {
             if cells[row].allSatisfy({ $0 != .empty }) {
                 clearedRows.append(row)
             }
         }
 
-        for col in 0..<GameGrid.size {
-            let isColumnFull = (0..<GameGrid.size).allSatisfy { cells[$0][col] != .empty }
+        for col in 0..<GameGrid.columns {
+            let isColumnFull = (0..<GameGrid.rows).allSatisfy { cells[$0][col] != .empty }
             if isColumnFull {
                 clearedCols.append(col)
             }
@@ -94,8 +96,8 @@ struct GameGrid {
 
     func isBoardStuck(pieces: [BlockPiece]) -> Bool {
         for piece in pieces {
-            for row in 0..<GameGrid.size {
-                for col in 0..<GameGrid.size {
+            for row in 0..<GameGrid.rows {
+                for col in 0..<GameGrid.columns {
                     if canPlace(piece: piece, at: GridPosition(row: row, col: col)) {
                         return false
                     }
@@ -105,10 +107,21 @@ struct GameGrid {
         return true
     }
 
+    // MARK: - Erase
+
+    mutating func eraseCell(row: Int, col: Int) -> Bool {
+        guard row >= 0, row < GameGrid.rows, col >= 0, col < GameGrid.columns else {
+            return false
+        }
+        guard cells[row][col] != .empty else { return false }
+        cells[row][col] = .empty
+        return true
+    }
+
     // MARK: - Query
 
     func cellAt(row: Int, col: Int) -> CellState {
-        guard row >= 0, row < GameGrid.size, col >= 0, col < GameGrid.size else {
+        guard row >= 0, row < GameGrid.rows, col >= 0, col < GameGrid.columns else {
             return .empty
         }
         return cells[row][col]

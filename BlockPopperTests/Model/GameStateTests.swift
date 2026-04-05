@@ -24,41 +24,39 @@ final class GameStateTests: XCTestCase {
     }
 
     func testInitialState_phase() {
-        XCTAssertEqual(GameState().phase, .playing)
+        XCTAssertEqual(GameState().gamePhase, .playing)
     }
 
     func testInitialState_trayCount() {
         XCTAssertEqual(GameState().trayPieces.count, 3)
     }
 
-    // MARK: - Score: 9 pts per cleared line
+    // MARK: - Score: 8 pts per cleared line (8x8 grid)
 
     func testScore_incrementsByGridSize_perClearedLine() {
         let state = GameState()
         triggerLineClear(state, row: 0)
-        XCTAssertEqual(state.score, GameGrid.size)   // 1 line × 9 = 9
+        XCTAssertEqual(state.score, GameGrid.size)
     }
 
     func testScore_incrementsFor_twoSeparateLineCLears() {
         let state = GameState()
         triggerLineClear(state, row: 0)
         XCTAssertEqual(state.score, GameGrid.size)
-        state.onClearAnimationComplete()
+        _ = state.onClearAnimationComplete()
         triggerLineClear(state, row: 1)
         XCTAssertEqual(state.score, GameGrid.size * 2)
     }
 
     func testScore_noChange_withoutLineClear() {
         let state = GameState()
-        // Place a single dot that does not complete any row or column
         var g = state.grid
         g.place(piece: BlockPiece.make(.dot), at: GridPosition(row: 4, col: 4))
         state._setGrid(g)
         XCTAssertEqual(state.score, 0)
     }
 
-    func testScore_pointsFormula_ninePerLine() {
-        // Verify ClearResult.points = totalClearedLines * gridSize
+    func testScore_pointsFormula() {
         var grid = GameGrid()
         for row in 0..<3 {
             for col in 0..<GameGrid.size {
@@ -85,7 +83,7 @@ final class GameStateTests: XCTestCase {
 
     func testLives_useLife_doesNotDecrementWhenPlaying() {
         let state = GameState()
-        XCTAssertEqual(state.phase, .playing)
+        XCTAssertEqual(state.gamePhase, .playing)
         state.useLife()
         XCTAssertEqual(state.lives, GameState.maxLives)
     }
@@ -93,97 +91,140 @@ final class GameStateTests: XCTestCase {
     func testLives_useLife_doesNotDecrementWhenGameOver() {
         let state = GameState()
         drainAllLives(state)
-        XCTAssertEqual(state.phase, .gameOver)
+        XCTAssertEqual(state.gamePhase, .gameOver)
         let livesBefore = state.lives
         state.useLife()
         XCTAssertEqual(state.lives, livesBefore)
     }
 
-    // MARK: - Level Advancement
+    // MARK: - Phase Advancement
 
-    func testLevel_advancesAt100_forLevel1() {
+    func testPhase_advancesWhenPhaseScoreReachesTarget() {
         let state = GameState()
-        state._setScore(100)
-        state.checkLevelUp()
-        XCTAssertEqual(state.level, 2)
+        // Phase 1 target is 100
+        state._setPhaseScore(100)
+        XCTAssertTrue(state.checkPhaseComplete())
+        XCTAssertEqual(state.gamePhase, .phaseComplete)
     }
 
-    func testLevel_advancesAt300_forLevel2() {
+    func testPhase_doesNotAdvance_belowThreshold() {
         let state = GameState()
-        state._setLevel(2)
-        state._setScore(300)
-        state.checkLevelUp()
-        XCTAssertEqual(state.level, 3)
+        state._setPhaseScore(99)
+        XCTAssertFalse(state.checkPhaseComplete())
     }
 
-    func testLevel_advancesAt600_forLevel3() {
-        let state = GameState()
-        state._setLevel(3)
-        state._setScore(600)
-        state.checkLevelUp()
-        XCTAssertEqual(state.level, 4)
-    }
-
-    func testLevel_advancesAt1000_forLevel4() {
-        let state = GameState()
-        state._setLevel(4)
-        state._setScore(1000)
-        state.checkLevelUp()
-        XCTAssertEqual(state.level, 5)
-    }
-
-    func testLevel_doesNotAdvance_belowThreshold() {
-        let state = GameState()
-        state._setScore(99)
-        state.checkLevelUp()
-        XCTAssertEqual(state.level, 1)
-    }
-
-    func testLevel_thresholdFormula_matchesSpecification() {
-        // 100*level + 50*level*(level-1)
-        let expected = [(1, 100), (2, 300), (3, 600), (4, 1000)]
-        for (level, score) in expected {
+    func testPhase_targetFormula_linearProgression() {
+        let expected = [(1, 100), (2, 120), (3, 140), (4, 160)]
+        for (phase, target) in expected {
             XCTAssertEqual(
-                LevelConfig.targetScore(forLevel: level), score,
-                "Threshold mismatch at level \(level)"
+                LevelConfig.targetScore(forPhase: phase), target,
+                "Target mismatch at phase \(phase)"
             )
         }
+    }
+
+    func testAdvancePhase_resetsPhaseScore() {
+        let state = GameState()
+        state._setPhaseScore(100)
+        _ = state.checkPhaseComplete()
+        state.advancePhase()
+        XCTAssertEqual(state.phaseScore, 0)
+        XCTAssertEqual(state.phase, 2)
+        XCTAssertEqual(state.gamePhase, .playing)
+    }
+
+    // MARK: - Hack Economy
+
+    func testHacks_initiallyZero() {
+        XCTAssertEqual(GameState().hacksAvailable, 0)
+    }
+
+    func testHacks_earnedEvery100Points() {
+        let state = GameState()
+        state._setScore(100)
+        XCTAssertEqual(state.hacksAvailable, 1)
+        state._setScore(250)
+        XCTAssertEqual(state.hacksAvailable, 2)
+    }
+
+    func testHacks_reducedByUsage() {
+        let state = GameState()
+        state._setScore(200)
+        XCTAssertEqual(state.hacksAvailable, 2)
+        state._setHacksUsed(1)
+        XCTAssertEqual(state.hacksAvailable, 1)
+    }
+
+    func testFlush_costsOneHack() {
+        let state = GameState()
+        state._setScore(100)
+        XCTAssertEqual(state.hacksAvailable, 1)
+        _ = state.flush()
+        XCTAssertEqual(state.hacksAvailable, 0)
+    }
+
+    func testFlush_failsWithNoHacks() {
+        let state = GameState()
+        XCTAssertFalse(state.flush())
+    }
+
+    func testErase_costsOneHack() {
+        let state = GameState()
+        state._setScore(100)
+        var g = state.grid
+        g.place(piece: BlockPiece.make(.dot), at: GridPosition(row: 0, col: 0))
+        state._setGrid(g)
+        state.isEraseMode = true
+        XCTAssertTrue(state.eraseCell(row: 0, col: 0))
+        XCTAssertEqual(state.hacksAvailable, 0)
+    }
+
+    func testErase_autoDeactivatesAtZeroHacks() {
+        let state = GameState()
+        state._setScore(100)
+        state.isEraseMode = true
+        var g = state.grid
+        g.place(piece: BlockPiece.make(.dot), at: GridPosition(row: 0, col: 0))
+        state._setGrid(g)
+        _ = state.eraseCell(row: 0, col: 0)
+        XCTAssertFalse(state.isEraseMode)
     }
 
     // MARK: - GamePhase Transitions
 
     func testPhase_playing_to_animatingClear() {
         let state = GameState()
-        XCTAssertEqual(state.phase, .playing)
+        XCTAssertEqual(state.gamePhase, .playing)
         triggerLineClear(state, row: 0)
-        XCTAssertEqual(state.phase, .animatingClear)
+        XCTAssertEqual(state.gamePhase, .animatingClear)
     }
 
     func testPhase_animatingClear_to_playing_whenNotStuck() {
         let state = GameState()
         triggerLineClear(state, row: 0)
-        XCTAssertEqual(state.phase, .animatingClear)
-        state.onClearAnimationComplete()
-        XCTAssertEqual(state.phase, .playing)
+        XCTAssertEqual(state.gamePhase, .animatingClear)
+        _ = state.onClearAnimationComplete()
+        // May be .playing or .phaseComplete depending on score
+        XCTAssertTrue(state.gamePhase == .playing || state.gamePhase == .phaseComplete)
     }
 
     func testPhase_playing_to_stuck_whenNoPieceFits() {
         let state = GameState()
         forceStuck(state)
-        XCTAssertEqual(state.phase, .stuck)
+        XCTAssertEqual(state.gamePhase, .stuck)
     }
 
     func testPhase_stuck_to_rescuing_onUseLife() {
         let state = GameState()
         forceStuck(state)
         state.useLife()
-        XCTAssertEqual(state.phase, .rescuing)
+        XCTAssertEqual(state.gamePhase, .rescuing)
     }
 
     func testPhase_stuck_to_gameOver_whenZeroLives() {
         let state = GameState()
         drainAllLives(state)
-        XCTAssertEqual(state.phase, .gameOver)
+        XCTAssertEqual(state.gamePhase, .gameOver)
     }
 
     func testPhase_rescuing_to_playing_afterPerformRescue() {
@@ -191,7 +232,7 @@ final class GameStateTests: XCTestCase {
         forceStuck(state)
         state.useLife()
         state.performRescue()
-        XCTAssertEqual(state.phase, .playing)
+        XCTAssertEqual(state.gamePhase, .playing)
     }
 
     // MARK: - Illegal Transitions
@@ -201,48 +242,48 @@ final class GameStateTests: XCTestCase {
         let livesBefore = state.lives
         state.useLife()
         XCTAssertEqual(state.lives, livesBefore)
-        XCTAssertEqual(state.phase, .playing)
+        XCTAssertEqual(state.gamePhase, .playing)
     }
 
     func testIllegalTransition_useLife_whenAnimatingClear_isNoOp() {
         let state = GameState()
         triggerLineClear(state, row: 0)
-        XCTAssertEqual(state.phase, .animatingClear)
+        XCTAssertEqual(state.gamePhase, .animatingClear)
         let livesBefore = state.lives
         state.useLife()
         XCTAssertEqual(state.lives, livesBefore)
-        XCTAssertEqual(state.phase, .animatingClear)
+        XCTAssertEqual(state.gamePhase, .animatingClear)
     }
 
     func testIllegalTransition_useLife_whenGameOver_isNoOp() {
         let state = GameState()
         drainAllLives(state)
-        XCTAssertEqual(state.phase, .gameOver)
+        XCTAssertEqual(state.gamePhase, .gameOver)
         state.useLife()
-        XCTAssertEqual(state.phase, .gameOver)
+        XCTAssertEqual(state.gamePhase, .gameOver)
     }
 
     func testIllegalTransition_performRescue_whenPlaying_isNoOp() {
         let state = GameState()
         state.performRescue()
-        XCTAssertEqual(state.phase, .playing)
+        XCTAssertEqual(state.gamePhase, .playing)
     }
 
     func testIllegalTransition_performRescue_whenAnimatingClear_isNoOp() {
         let state = GameState()
         triggerLineClear(state, row: 0)
-        XCTAssertEqual(state.phase, .animatingClear)
+        XCTAssertEqual(state.gamePhase, .animatingClear)
         state.performRescue()
-        XCTAssertEqual(state.phase, .animatingClear)
+        XCTAssertEqual(state.gamePhase, .animatingClear)
     }
 
     func testIllegalTransition_cannotUseLife_whenLivesZero() {
         let state = GameState()
         state._setLives(0)
         state._setPhase(.stuck)
-        state.useLife()   // guard: lives > 0 required
+        state.useLife()
         XCTAssertEqual(state.lives, 0)
-        XCTAssertEqual(state.phase, .stuck)
+        XCTAssertEqual(state.gamePhase, .stuck)
     }
 
     // MARK: - resetGame
@@ -275,9 +316,9 @@ final class GameStateTests: XCTestCase {
     func testResetGame_restoresPhase() {
         let state = GameState()
         forceStuck(state)
-        XCTAssertEqual(state.phase, .stuck)
+        XCTAssertEqual(state.gamePhase, .stuck)
         state.resetGame()
-        XCTAssertEqual(state.phase, .playing)
+        XCTAssertEqual(state.gamePhase, .playing)
     }
 
     func testResetGame_clearsGrid() {
@@ -310,11 +351,10 @@ final class GameStateTests: XCTestCase {
 
     func testRescue_scoreUnchanged_afterMultipleRescues() {
         let state = GameState()
-        // Rescue up to maxLives times without ever triggering a line clear
         var rescues = 0
-        while state.lives > 0 && state.phase != .gameOver {
+        while state.lives > 0 && state.gamePhase != .gameOver {
             forceStuck(state)
-            guard state.phase == .stuck, state.lives > 0 else { break }
+            guard state.gamePhase == .stuck, state.lives > 0 else { break }
             state.useLife()
             state.performRescue()
             rescues += 1
@@ -324,14 +364,36 @@ final class GameStateTests: XCTestCase {
                        "Score must remain 0 after \(rescues) rescues (no line clears)")
     }
 
+    // MARK: - Use-All-3 Rule
+
+    func testTray_notRefilledUntilAllUsed() {
+        let state = GameState()
+        // Place one piece — tray should have a nil slot
+        let piece0 = state.trayPieces[0]
+        if let piece = piece0 {
+            // Find a valid placement
+            for row in 0..<GameGrid.rows {
+                for col in 0..<GameGrid.columns {
+                    if state.grid.canPlace(piece: piece, at: GridPosition(row: row, col: col)) {
+                        _ = state.placePiece(at: 0, position: GridPosition(row: row, col: col))
+                        // After clear animation if any
+                        if state.gamePhase == .animatingClear {
+                            _ = state.onClearAnimationComplete()
+                        }
+                        XCTAssertNil(state.trayPieces[0], "Slot should be nil after use")
+                        return
+                    }
+                }
+            }
+        }
+    }
+
     // MARK: - Helpers
 
     /// Fills row `row` in the state's grid and triggers GameState's clear bookkeeping.
-    /// After this call: state.phase == .animatingClear and state.score has increased.
     private func triggerLineClear(_ state: GameState, row: Int) {
-        guard state.phase == .playing else { return }
+        guard state.gamePhase == .playing else { return }
 
-        // Place first 8 dots directly on the grid (no clear triggered yet)
         var g = state.grid
         for col in 0..<(GameGrid.size - 1) {
             if g.cellAt(row: row, col: col) == .empty {
@@ -340,8 +402,6 @@ final class GameStateTests: XCTestCase {
         }
         state._setGrid(g)
 
-        // For the 9th cell, use placePiece if a dot is in the tray (triggers
-        // GameState's clear + score + phase logic). Fall back to direct placement.
         let lastCol = GameGrid.size - 1
         if state.grid.cellAt(row: row, col: lastCol) == .empty {
             var usedTray = false
@@ -353,7 +413,6 @@ final class GameStateTests: XCTestCase {
                 }
             }
             if !usedTray {
-                // No dot in tray — place directly then replicate GameState bookkeeping
                 var g2 = state.grid
                 g2.place(piece: BlockPiece.make(.dot), at: GridPosition(row: row, col: lastCol))
                 let clearResult = g2.clearFullLines()
@@ -366,13 +425,12 @@ final class GameStateTests: XCTestCase {
         }
     }
 
-    /// Forces state.phase to .stuck by filling the grid and manually evaluating
-    /// the stuck condition. Does not go through placePiece (avoids tray randomness).
+    /// Forces state.gamePhase to .stuck by filling the grid.
     private func forceStuck(_ state: GameState) {
-        guard state.phase == .playing else { return }
+        guard state.gamePhase == .playing else { return }
         var g = state.grid
-        for row in 0..<GameGrid.size {
-            for col in 0..<GameGrid.size {
+        for row in 0..<GameGrid.rows {
+            for col in 0..<GameGrid.columns {
                 if g.cellAt(row: row, col: col) == .empty {
                     g.place(piece: BlockPiece.make(.dot), at: GridPosition(row: row, col: col))
                 }
@@ -387,14 +445,13 @@ final class GameStateTests: XCTestCase {
 
     /// Drains all lives via the useLife / performRescue cycle, ending in .gameOver.
     private func drainAllLives(_ state: GameState) {
-        while state.lives > 0 && state.phase != .gameOver {
-            if state.phase != .stuck { forceStuck(state) }
-            guard state.phase == .stuck, state.lives > 0 else { break }
+        while state.lives > 0 && state.gamePhase != .gameOver {
+            if state.gamePhase != .stuck { forceStuck(state) }
+            guard state.gamePhase == .stuck, state.lives > 0 else { break }
             state.useLife()
-            state.performRescue()   // → .playing; next iteration re-forces stuck
+            state.performRescue()
         }
-        // Final stuck with 0 lives → gameOver
-        if state.phase == .playing {
+        if state.gamePhase == .playing {
             forceStuck(state)
         }
     }

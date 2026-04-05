@@ -3,64 +3,60 @@ import XCTest
 
 final class LevelConfigTests: XCTestCase {
 
-    // MARK: - Specified thresholds
-
-    func testLevel0ReturnsZero() {
-        XCTAssertEqual(LevelConfig.targetScore(forLevel: 0), 0)
-    }
-
-    func testLevel1() {
-        XCTAssertEqual(LevelConfig.targetScore(forLevel: 1), 100)
-    }
-
-    func testLevel2() {
-        XCTAssertEqual(LevelConfig.targetScore(forLevel: 2), 300)
-    }
-
-    func testLevel3() {
-        XCTAssertEqual(LevelConfig.targetScore(forLevel: 3), 600)
-    }
-
-    func testLevel4() {
-        XCTAssertEqual(LevelConfig.targetScore(forLevel: 4), 1000)
-    }
-
     // MARK: - Edge cases
 
-    func testNegativeLevel_returnsZero() {
-        XCTAssertEqual(LevelConfig.targetScore(forLevel: -1), 0)
-        XCTAssertEqual(LevelConfig.targetScore(forLevel: -99), 0)
+    func testPhase0ReturnsDefault() {
+        XCTAssertEqual(LevelConfig.targetScore(forPhase: 0), 100)
     }
 
-    // MARK: - Formula: 100*level + 50*level*(level-1) for levels 1–10
+    func testNegativePhase_returnsDefault() {
+        XCTAssertEqual(LevelConfig.targetScore(forPhase: -1), 100)
+        XCTAssertEqual(LevelConfig.targetScore(forPhase: -99), 100)
+    }
 
-    func testFormulaForLevels1Through10() {
+    // MARK: - Specified thresholds (linear: 100 + (phase-1) * 20)
+
+    func testPhase1() {
+        XCTAssertEqual(LevelConfig.targetScore(forPhase: 1), 100)
+    }
+
+    func testPhase2() {
+        XCTAssertEqual(LevelConfig.targetScore(forPhase: 2), 120)
+    }
+
+    func testPhase3() {
+        XCTAssertEqual(LevelConfig.targetScore(forPhase: 3), 140)
+    }
+
+    func testPhase4() {
+        XCTAssertEqual(LevelConfig.targetScore(forPhase: 4), 160)
+    }
+
+    func testPhase5() {
+        XCTAssertEqual(LevelConfig.targetScore(forPhase: 5), 180)
+    }
+
+    // MARK: - Formula: 100 + (phase-1) * 20 for phases 1–10
+
+    func testFormulaForPhases1Through10() {
         let expected = [
-            1: 100,
-            2: 300,
-            3: 600,
-            4: 1000,
-            5: 1500,
-            6: 2100,
-            7: 2800,
-            8: 3600,
-            9: 4500,
-            10: 5500
+            1: 100, 2: 120, 3: 140, 4: 160, 5: 180,
+            6: 200, 7: 220, 8: 240, 9: 260, 10: 280
         ]
-        for (level, expectedScore) in expected {
-            let actual = LevelConfig.targetScore(forLevel: level)
+        for (phase, expectedScore) in expected {
+            let actual = LevelConfig.targetScore(forPhase: phase)
             XCTAssertEqual(actual, expectedScore,
-                           "Level \(level): expected \(expectedScore), got \(actual)")
+                           "Phase \(phase): expected \(expectedScore), got \(actual)")
         }
     }
 
-    func testFormula_matchesExpressionDirectly_levels1Through10() {
-        for level in 1...10 {
-            let formulaResult = 100 * level + 50 * level * (level - 1)
+    func testFormula_matchesExpressionDirectly() {
+        for phase in 1...10 {
+            let formulaResult = 100 + (phase - 1) * 20
             XCTAssertEqual(
-                LevelConfig.targetScore(forLevel: level),
+                LevelConfig.targetScore(forPhase: phase),
                 formulaResult,
-                "Formula mismatch at level \(level)"
+                "Formula mismatch at phase \(phase)"
             )
         }
     }
@@ -69,43 +65,20 @@ final class LevelConfigTests: XCTestCase {
 
     func testScoresAreMonotonicallyIncreasing() {
         var previous = 0
-        for level in 1...20 {
-            let score = LevelConfig.targetScore(forLevel: level)
+        for phase in 1...20 {
+            let score = LevelConfig.targetScore(forPhase: phase)
             XCTAssertGreaterThan(score, previous,
-                                 "Level \(level) score (\(score)) should be > level \(level-1) score (\(previous))")
+                                 "Phase \(phase) score (\(score)) should be > phase \(phase-1) score (\(previous))")
             previous = score
         }
     }
 
-    // MARK: - Spot checks for levels 5–10
+    // MARK: - Legacy API
 
-    func testLevel5_is1500() {
-        // 100*5 + 50*5*4 = 500 + 1000 = 1500
-        XCTAssertEqual(LevelConfig.targetScore(forLevel: 5), 1500)
-    }
-
-    func testLevel6_is2100() {
-        // 100*6 + 50*6*5 = 600 + 1500 = 2100
-        XCTAssertEqual(LevelConfig.targetScore(forLevel: 6), 2100)
-    }
-
-    func testLevel7_is2800() {
-        // 100*7 + 50*7*6 = 700 + 2100 = 2800
-        XCTAssertEqual(LevelConfig.targetScore(forLevel: 7), 2800)
-    }
-
-    func testLevel8_is3600() {
-        // 100*8 + 50*8*7 = 800 + 2800 = 3600
-        XCTAssertEqual(LevelConfig.targetScore(forLevel: 8), 3600)
-    }
-
-    func testLevel9_is4500() {
-        // 100*9 + 50*9*8 = 900 + 3600 = 4500
-        XCTAssertEqual(LevelConfig.targetScore(forLevel: 9), 4500)
-    }
-
-    func testLevel10_is5500() {
-        // 100*10 + 50*10*9 = 1000 + 4500 = 5500
-        XCTAssertEqual(LevelConfig.targetScore(forLevel: 10), 5500)
+    func testLegacyForLevel_matchesForPhase() {
+        for i in 1...10 {
+            XCTAssertEqual(LevelConfig.targetScore(forLevel: i),
+                           LevelConfig.targetScore(forPhase: i))
+        }
     }
 }

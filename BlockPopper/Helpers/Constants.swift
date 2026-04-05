@@ -1,9 +1,12 @@
 import Foundation
 import CoreGraphics
+import UIKit
 
 struct Constants {
     // Grid
-    static let gridSize = 8
+    static let gridColumns = 8
+    static let gridRows = 8
+    static let gridSize = gridColumns
 
     // Layout proportions
     static let gridScreenRatio: CGFloat = 0.78

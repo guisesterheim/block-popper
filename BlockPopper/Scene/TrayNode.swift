@@ -92,9 +92,12 @@ class TrayNode: SKNode {
         let pieceWidth  = CGFloat(maxCol - minCol + 1) * cs
         let pieceHeight = CGFloat(maxRow - minRow + 1) * cs
 
-        // Offset so the piece visual is centered in the slot
+        // Center piece horizontally in slot, vertically in tray
         let offsetX = centerX - CGFloat(minCol) * cs - pieceWidth / 2
-        let offsetY = CGFloat(minRow) * cs + pieceHeight / 2
+        // Piece cells are at y = -row * cs, so visual center sits below the anchor.
+        // Shift node up by half the row span to vertically center the piece.
+        let visualCenterY = -CGFloat(minRow + maxRow) * cs / 2.0
+        let offsetY = -visualCenterY
 
         node.position = CGPoint(x: offsetX, y: offsetY)
     }
