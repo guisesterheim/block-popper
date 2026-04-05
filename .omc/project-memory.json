@@ -247,6 +247,12 @@
       "type": "file"
     },
     {
+      "path": "README.md",
+      "accessCount": 2,
+      "lastAccessed": 1775420687741,
+      "type": "file"
+    },
+    {
       "path": "BlockPopper/App/AppDelegate.swift",
       "accessCount": 1,
       "lastAccessed": 1775317477725,
