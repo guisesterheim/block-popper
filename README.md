@@ -8,7 +8,7 @@ This project started as an experiment to see how far AI-assisted development cou
 
 ## The Goal
 
-My goal with this project was to understand how a seasoned backend developer would do when entering the game developing world. This is the first game I have ever built, and I didn't dive deep into concepts like the sound and musics, and also went very briefly into the animations required for a flagship game like the famous ones. This was built in about 6h of prompting of Claude Code and oh-my-claudecode.
+My goal with this project was to understand how a seasoned backend developer would do when entering the game developing world. This is the first game I have ever built, and I didn't dive deep into concepts like the sound and musics, and also went very briefly into the animations required for a flagship game like the famous ones. **This was built in about 6h of prompting of Claude Code and oh-my-claudecode.**
 
 ## Result
 
