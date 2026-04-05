@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1775313288890,
+  "lastScanned": 1775421003599,
   "projectRoot": "/Users/guisester/code/block-popper",
   "techStack": {
     "languages": [],
@@ -28,7 +28,63 @@
     "gitBranches": null
   },
   "customNotes": [],
-  "directoryMap": {},
+  "directoryMap": {
+    "BlockPopper": {
+      "path": "BlockPopper",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1775421003589,
+      "keyFiles": [
+        "Info.plist"
+      ]
+    },
+    "BlockPopper.xcodeproj": {
+      "path": "BlockPopper.xcodeproj",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1775421003590,
+      "keyFiles": [
+        "project.pbxproj"
+      ]
+    },
+    "BlockPopperTests": {
+      "path": "BlockPopperTests",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1775421003590,
+      "keyFiles": []
+    },
+    "readme_images": {
+      "path": "readme_images",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1775421003590,
+      "keyFiles": [
+        "final_result.gif"
+      ]
+    },
+    "BlockPopper/App": {
+      "path": "BlockPopper/App",
+      "purpose": "Application code",
+      "fileCount": 2,
+      "lastAccessed": 1775421003591,
+      "keyFiles": [
+        "AppDelegate.swift",
+        "GameViewController.swift"
+      ]
+    },
+    "BlockPopper/Helpers": {
+      "path": "BlockPopper/Helpers",
+      "purpose": "Helper functions",
+      "fileCount": 5,
+      "lastAccessed": 1775421003591,
+      "keyFiles": [
+        "ColorPalette.swift",
+        "Constants.swift",
+        "DebugConfig.swift"
+      ]
+    }
+  },
   "hotPaths": [
     {
       "path": "BlockPopper/Scene/GameScene.swift",

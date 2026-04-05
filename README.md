@@ -1,6 +1,6 @@
 # Block Popper
 
-A block puzzle game for iOS built entirely with AI assistance to explore the capabilities of [Claude Code](https://claude.ai/claude-code) and [oh-my-claudecode](https://github.com/anthropics/oh-my-claudecode).
+A block puzzle game for iOS built entirely with AI assistance to explore the capabilities of [Claude Code](https://claude.ai/new) and [oh-my-claudecode](https://github.com/yeachan-heo/oh-my-claudecode).
 
 ## The Experiment
 
